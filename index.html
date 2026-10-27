@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Peds Anesthesia Quick Reference</title>
+<style>
+:root{--bg:#f3f6f8;--surf:#fff;--ink:#14212b;--mute:#5a6b78;--line:#d3dde4;--acc:#0b6e8a;--accbg:#e1f1f6;--warn:#a54300;--warnbg:#fff0e2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a21;--surf:#17252e;--ink:#e6eef3;--mute:#93a6b3;--line:#2b3d49;--acc:#5cc3de;--accbg:#12323d;--warn:#ffb066;--warnbg:#3a2411;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1a21;--surf:#17252e;--ink:#e6eef3;--mute:#93a6b3;--line:#2b3d49;--acc:#5cc3de;--accbg:#12323d;--warn:#ffb066;--warnbg:#3a2411;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:720px;margin:0 auto;padding:12px 14px 40px}
+h1{font-size:1.15rem;margin:6px 0 10px}
+.warn{background:var(--warnbg);color:var(--warn);border-radius:8px;padding:8px 12px;font-size:.85rem;margin-bottom:12px}
+.in{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:.8rem;color:var(--mute);margin-bottom:2px}
+.f{display:flex;gap:6px}
+input,select{width:100%;font:inherit;font-size:1.15rem;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+select{width:auto}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+#est{grid-column:1/-1;font-size:.85rem;color:var(--mute);min-height:1.3em}
+#est button{font:inherit;color:var(--acc);background:none;border:0;padding:0 0 0 6px;text-decoration:underline;cursor:pointer}
+#est .bad{color:var(--warn);font-weight:600}
+.tabs{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.tabs button{flex:1 1 auto;font:inherit;font-weight:600;padding:9px 2px;font-size:.85rem;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--mute);cursor:pointer}
+.tabs button{color:#14212b;opacity:.6}
+.tabs button[data-t="eq"]{background:#f4ff3d}
+.tabs button[data-t="md"]{background:#4dff7a}
+.tabs button[data-t="pm"]{background:#d9c6f7}
+.tabs button[data-t="fl"]{background:#b8e2fb}
+.tabs button[data-t="ab"]{background:#ffd0a1}
+.tabs button[aria-selected="true"]{opacity:1;border:3px solid var(--ink)}
+.tabs button:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+section{margin-top:18px}
+h2{font-size:1rem;margin:0 0 6px;padding-bottom:4px;border-bottom:2px solid var(--acc)}
+.r{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.r b{font-weight:600}
+.v{font-variant-numeric:tabular-nums;font-weight:700;font-size:1.1rem;text-align:right;color:var(--acc)}
+.s{color:var(--mute);font-size:.8rem}
+.cap{color:var(--warn);font-weight:600}
+.empty{color:var(--mute);padding:14px 0}
+footer{margin-top:22px;font-size:.78rem;color:var(--mute)}
+</style>
+</head>
+<body>
+<main>
+<h1>Peds anesthesia quick reference</h1>
+<div class="warn">Personal reference aid. Verify every dose against your formulary and a current published source before use. Not a substitute for clinical judgment.</div>
+<div class="in">
+ <div><label for="age">Age</label><div class="f"><input id="age" type="number" inputmode="decimal" min="0" step="any" placeholder="0"><select id="unit" aria-label="Age unit"><option value="y">years</option><option value="m">months</option></select></div></div>
+ <div><label for="wt">Weight (kg)</label><input id="wt" type="number" inputmode="decimal" min="0" step="any" placeholder="kg"></div>
+ <div id="est"></div>
+ <div class="tabs" role="tablist"><button role="tab" data-t="eq" aria-selected="true">Equipment</button><button role="tab" data-t="md" aria-selected="false">Common meds</button><button role="tab" data-t="pm" aria-selected="false">Premeds</button><button role="tab" data-t="fl" aria-selected="false">Fluids</button><button role="tab" data-t="ab" aria-selected="false">Antibiotics</button></div>
+</div>
+<div id="out"></div>
+<footer>Doses shown are common ranges per kg and are capped at typical maximums where one applies. Ranges are low to high. Always confirm concentration and volume before drawing up.</footer>
+</main>
+<script>
+var G=[
+["Priority",[
+["Succinylcholine IV",1,2,"mg",null,"2 mg/kg in infants"],
+["Succinylcholine IM",4,4,"mg",100,"Max 5 mL injection (100 mg at 20 mg/mL)"],
+["Epinephrine IV (arrest)",0.01,0.01,"mg",1,"0.1 mL/kg of 0.1 mg/mL"],
+["Epinephrine IM (anaphylaxis)",0.01,0.01,"mg",0.5,"0.01 mL/kg of 1 mg/mL"],
+["Atropine IV/IO",0.02,0.02,"mg",0.5,"Min 0.1 mg. Max 0.5 mg child, 1 mg adolescent",0.1,1],
+["Atropine IM",0.02,0.03,"mg",0.5,"Min 0.1 mg. Max 0.5 mg child, 1 mg adolescent",0.1,1]]],
+["Common meds",[
+["Propofol",2,4,"mg",null,"IV, higher end in infants"],
+["Rocuronium",0.6,1.2,"mg",null,"1.2 for RSI"],
+["Fentanyl",1,2,"mcg",null,"IV"],
+["Ondansetron",0.1,0.15,"mg",4,""],
+["Dexamethasone",0.15,0.25,"mg",8,""],
+["Ketorolac IV/IM",0.5,0.5,"mg",30,"Not recommended under 1 year of age"],
+["Sugammadex",2,4,"mg",null,"4 mg/kg for deep block"],
+["Neostigmine",0.03,0.07,"mg",5,"Give with glycopyrrolate"],
+["Glycopyrrolate",0.01,0.015,"mg",0.4,""]]],
+["Premeds",[
+["Acetaminophen PO",10,15,"mg",1000,""],
+["Acetaminophen PR",30,40,"mg",1000,"Load"],
+["Dexmedetomidine IN",1,1,"mcg",null,"Intranasal"],
+["Midazolam PO",0.25,0.5,"mg",20,"Premedication"],
+["Ketamine IM",3,5,"mg",null,"Combine with atropine 0.02 mg/kg and midazolam 0.1–0.2 mg/kg"],
+["Ketamine PO",4,6,"mg",null,"Add midazolam 0.25–0.5 mg/kg"]]],
+["Other emergency and local anesthetic",[
+["Amiodarone",5,5,"mg",300,"Pulseless VF or VT"],
+["Calcium chloride",10,20,"mg",1000,"Central line preferred"],
+["Sodium bicarbonate",1,1,"mEq",null,""],
+["Dantrolene (MH)",2.5,2.5,"mg",null,"Repeat to effect"],
+["Lipid emulsion 20% (LAST)",1.5,1.5,"mL",null,"Bolus, then infusion"],
+["Bupivacaine plain, max",2.5,2.5,"mg",null,"Total dose"],
+["Lidocaine plain, max",5,5,"mg",null,"7 mg/kg with epinephrine"]]]
+];
+function f(n){return String(+(n>=100?n.toFixed(0):n>=10?n.toFixed(1):n>=1?n.toFixed(2):n.toFixed(3)))}
+function est(a){if(a<1)return a*12/2+4;if(a<=5)return 2*(a+4);if(a<=14)return 3*a+7;return null}
+function row(n,v,s,w){return '<div class="r"><div><b>'+n+'</b></div><div class="v">'+v+'</div><div class="s">'+s+'</div><div class="s" style="text-align:right">'+w+'</div></div>'}
+var AB=[
+["Ampicillin-sulbactam",50,2000,"15 min","2 h","Dose by ampicillin component"],
+["Aztreonam",30,2000,"IV push over 3–5 min","4 h",""],
+["Cefazolin",30,2000,"IV push over 3–5 min","4 h","Max 3000 mg if over 120 kg",[120,3000]],
+["Cefepime",50,2000,"30 min","4 h",""],
+["Cefoxitin",40,2000,"IV push over 3–5 min","2 h","Neonates 30 mg/kg"],
+["Ceftriaxone",50,2000,"30 min","12 h","Contraindicated in neonates under 14 days and under 41 weeks PMA"],
+["Clindamycin",10,900,"15 min","6 h",""],
+["Fluconazole",6,null,"60 to 120 min","24 h",""],
+["Gentamicin",5,null,"30 min","24 h",""],
+["Levofloxacin",10,500,"60 min","lev",""],
+["Metronidazole",15,500,"30 min","8 h",""],
+["Piperacillin-tazobactam",80,4000,"30 min","2 h","Dose by piperacillin component"],
+["Vancomycin",15,1000,"60 min","6 h",""]
+];
+function abx(w,a){var h='<section><h2>Antibiotics</h2>';
+ AB.forEach(function(d){var mx=d[2];if(d[6]&&w>d[6][0])mx=d[6][1];var v=d[1]*w,c=false;if(mx!==null&&v>mx){v=mx;c=true}
+  var iv=d[4];if(iv==="lev")iv=isNaN(a)?"12 h if under 5 y, 24 h if 5 y or older":(a<5?"12 h":"24 h");
+  h+=row(d[0],f(v)+" mg",f(d[1])+" mg/kg, "+(mx!==null?"max "+f(mx)+" mg":"no max listed")+(c?' <span class="cap">Capped</span>':"")+(d[5]?". "+d[5]:""),"Infuse: "+d[3]+". Redose every "+iv+".")});
+ return h+'</section><p class="s">Redose intervals are intraoperative and pediatric. For neonates, check the neonatal antimicrobial dosing guideline.</p><p class="s">Adapted from UCSF Benioff Children’s Hospitals Surgical and Trauma Antimicrobial Prophylaxis Guidelines</p>'}
+var tab="eq";
+function msg(t){return '<p class="empty">'+t+'</p>'}
+function meds(w,a,t){var h="";
+ G.forEach(function(g){if((g[0]==="Premeds")!==(t==="pm"))return;h+="<section><h2>"+g[0]+"</h2>";
+  g[1].forEach(function(d){
+   var mx=d[4],mn=d[6]||0,lo=d[1]*w,hi=d[2]*w,c=false,r=false;if(d[7]&&a>=12)mx=d[7];if(lo<mn){lo=mn;r=true}if(hi<mn){hi=mn;r=true}
+   if(mx!==null){if(lo>mx){lo=mx;c=true}if(hi>mx){hi=mx;c=true}}
+   var val=d[1]===d[2]||lo===hi?f(lo):f(lo)+"–"+f(hi);
+   var per=d[1]===d[2]?f(d[1])+" "+d[3]+"/kg":f(d[1])+"–"+f(d[2])+" "+d[3]+"/kg";
+   h+=row(d[0],val+" "+d[3],per+(d[5]?". "+d[5]:""),(c?'<span class="cap">Capped at max '+f(mx)+" "+d[3]+(d[7]?(a>=12?" (adolescent)":" (child)"):"")+"</span>":"")+(r?'<span class="cap">Raised to minimum '+f(mn)+" "+d[3]+"</span>":""))});
+  h+="</section>"});return h}
+function fluids(w){return '<section><h2>Fluids</h2>'+row("Maintenance (4-2-1)",f(w<=10?4*w:w<=20?40+2*(w-10):60+(w-20))+" mL/h","4 mL/kg/h first 10 kg, 2 next 10, 1 after","")+row("Crystalloid bolus",f(10*w)+"–"+f(20*w)+" mL","10–20 mL/kg (10 mL/kg in neonates)","")+'</section>'}
+function run(){
+ var a=parseFloat(age.value),w=parseFloat(wt.value);
+ if(unit.value==="m")a=a/12;
+ var e=isNaN(a)?null:est(a),el=document.getElementById("est");
+ el.innerHTML="";
+ if(e){var t="Estimated weight for age: "+f(e)+" kg";
+  if(!(w>0))t+=' <button id="use">Use estimate</button>';
+  else if(Math.abs(w-e)/e>0.4)t='<span class="bad">Entered weight differs from age estimate ('+f(e)+' kg). Check it.</span>';
+  el.innerHTML=t;var u=document.getElementById("use");if(u)u.onclick=function(){wt.value=f(e);run()}}
+ var ok=w>0&&w<200,h;
+ if(tab==="eq")h=isNaN(a)?msg("Enter age to see equipment sizes."):equip(a,ok?w:null);
+ else if(!ok)h=msg("Enter weight (kg) to see doses.");
+ else h=tab==="fl"?fluids(w):tab==="ab"?abx(w,a):meds(w,a,tab);
+ document.getElementById("out").innerHTML=h}
+document.querySelectorAll(".tabs button").forEach(function(b){b.onclick=function(){tab=b.dataset.t;document.querySelectorAll(".tabs button").forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false")});run()}});
+function equip(a,w){
+ var cu,un,dep,lma="",bl;
+ if(a<0.25){cu=3;un="3.0–3.5"}else if(a<1){cu=3.5;un=4}else{cu=a/4+3.5;un=a/4+4}
+ if(a<1)dep=3*cu;else dep=a/2+12;
+ var r=function(x){return(Math.round(x*2)/2).toFixed(1)};
+ if(w!==null){lma=w<5?"1":w<10?"1.5":w<20?"2":w<30?"2.5":w<50?"3":w<70?"4":"5"}
+ bl=a<1?"1":a<4?"2":a<10?"2–3":"3";
+ var h="<section><h2>Airway equipment</h2>"+
+ row("ETT cuffed (ID)",typeof cu==="number"?r(cu):cu,"Have 0.5 mm above and below ready","")+
+ row("ETT uncuffed (ID)",typeof un==="number"?r(un):un,"","")+
+ row("ETT depth at lip",f(dep)+" cm",a<1?"About 3 × ID":"Age/2 + 12. Add 2–3 cm nasal","Confirm with auscultation and capnography")+
+ row("Suction catheter",Math.round(2*cu)+" Fr","2 × cuffed ID","")+
+ row("Blade (Miller or Mac)",bl,"","");
+ if(lma)h+=row("LMA size",lma,"By weight","");
+ return h+"</section>"}
+age.oninput=wt.oninput=unit.onchange=run;run();
+</script>
+</body>
+</html>
